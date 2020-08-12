@@ -1,0 +1,20 @@
+{
+  "general_info": {
+    "title": "چت بات",
+    "about": "درباره ما"
+  },
+    "nav_bar": {
+      "home": "خانه",
+      "about": "درباره ما",
+      "web_page": "Chat-Bot",
+      "login": "ورود به سیستم",
+      "register": "ثبت نام"
+    },
+  "sidebar": {
+      "tag": "اطلاعات آخرین توییت تگ زده شده",
+      "last_tweet": "آخرین توییت",
+      "tweet_title": "موضوع توییت",
+      "tweet_sentiment": "احساس توییت",
+      "date": "ثبت نام"
+    }
+}

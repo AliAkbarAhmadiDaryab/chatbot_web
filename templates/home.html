@@ -1,0 +1,75 @@
+{% extends "layout.html"%}
+
+{%block content%}
+    {% for tweet in tweets%}
+        <form>
+
+            <article class="media content-section">
+                <div class="media-body">
+                    <div class="article-metadata">
+                        <small class="text_muted">تاریخ توییت</small>
+                    </div>
+                    <p class="article-content">{{ tweet.text }}</p>
+                    <div class="content-section text-right">
+                        <div class="row">
+                            {%for sentiment in sentiments%}
+                                  <div class="col-sm">
+                                      <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                      <label class="form-check-label" for="exampleCheck1">{{sentiment}}</label>
+                                  </div>
+                            {% endfor %}
+
+                          <div class="col-sm">
+                              <div class="dropdown">
+                                  <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    انتخاب موضوع
+                                  </button>
+                                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                      {% for new_title in tweet_titles%}
+                                        <a class="dropdown-item text-right" href="#">{{new_title}}</a>
+                                      {% endfor %}
+                                  </div>
+                              </div>
+                          </div>
+                        </div>
+                    </div>
+                    <ul class="list-group">
+                        {%for reply in tweet.replies%}
+                        <li class="list-group-item small"> <p> reply: {{ reply}}</p>
+                                <div class="content-section text-right">
+                                    <div class="row">
+                                     {%for sentiment in sentiments%}
+                                      <div class="col-sm">
+                                          <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                          <label class="form-check-label" for="exampleCheck1">{{sentiment}}</label>
+                                      </div>
+                                     {% endfor %}
+
+                                      <div class="col-sm">
+                                          <div class="dropdown">
+                                              <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                انتخاب موضوع
+                                              </button>
+                                              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                  {% for new_title in tweet_titles%}
+                                                    <a class="dropdown-item text-right" href="#">{{new_title}}</a>
+                                                  {% endfor %}
+                                              </div>
+                                          </div>
+                                        </div>
+                                </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <div class="content-section">
+                        <button type="submit" class="btn btn-primary btn-sm">  {{saved_button}}  </button>
+                    </div>
+                </div>
+
+            </article>
+
+
+        </form>
+    {% endfor %}
+{% endblock content %}
