@@ -1,7 +1,7 @@
 from flask import Flask, render_template, url_for
 import json
 
-from .forms import RegistrationForm, LoginForm
+from all_froms import RegistrationForm, LoginForm
 
 app = Flask(__name__)
 
@@ -19,6 +19,11 @@ tweets = [
     }
 ]
 
+default_tweets = [{
+    "text": "اولین توییت ما",
+    "replies": ["از دیدن شما خوشحالم", "از دیدن شما خیلی خوشحالم", "خیلی خوب هستی"]
+}]
+
 tweet_titles = ['سیاسی', 'اجتماعی', 'طنز', 'ورزشی']
 sentiments = ['احساس خنثی', 'احساس مثبت', 'احساس منفی']
 saved_button = '   ذخیره   '
@@ -35,8 +40,28 @@ def home():
 
 @app.route("/about")
 def about():
-    return render_template("about.html", tweets=tweets, title=CONFIG['general_info']['about'], nav_bar=CONFIG['nav_bar'],
+    return render_template("about.html", tweets=tweets, title=CONFIG['general_info']['about'],
+                           nav_bar=CONFIG['nav_bar'],
                            side_bar=CONFIG['sidebar'])
+
+
+@app.route("/register")
+def register():
+    form = RegistrationForm()
+    return render_template('register.html', title=CONFIG['general_info']['register'], form=form,
+                           nav_bar=CONFIG['nav_bar'],
+                           side_bar=CONFIG['sidebar'],
+                           tweets=default_tweets)
+
+
+@app.route("/login")
+def login():
+    form = LoginForm()
+    return render_template('login.html', title=CONFIG['general_info']['login'], form=form,
+                           nav_bar=CONFIG['nav_bar'],
+                           side_bar=CONFIG['sidebar'],
+                           tweets=default_tweets
+                           )
 
 
 if __name__ == '__main__':

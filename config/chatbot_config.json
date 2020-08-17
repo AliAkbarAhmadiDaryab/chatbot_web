@@ -1,7 +1,9 @@
 {
   "general_info": {
     "title": "چت بات",
-    "about": "درباره ما"
+    "about": "درباره ما",
+    "register": "ثبت نام",
+    "login": "ورود به سیستم"
   },
     "nav_bar": {
       "home": "خانه",
