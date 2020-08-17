@@ -1,7 +1,11 @@
 from flask import Flask, render_template, url_for
 import json
 
+from .forms import RegistrationForm, LoginForm
+
 app = Flask(__name__)
+
+app.config['SECRET_KEY'] = '0650c9411b66221d947b0ea065d18008'
 
 CONFIG = json.load(open('config/chatbot_config.json', 'rb'))
 tweets = [
