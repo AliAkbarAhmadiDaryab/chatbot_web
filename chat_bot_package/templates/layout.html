@@ -25,10 +25,15 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarToggle">
             <div class="navbar-nav ml-auto">
-              <a class="nav-item nav-link" href="/login">{{nav_bar.login}}</a>
-              <a class="nav-item nav-link" href="/register">{{nav_bar.register}}</a>
-              <a class="nav-item nav-link" href="/">{{nav_bar.home}}</a>
-              <a class="nav-item nav-link" href="/about">{{nav_bar.about}}</a>
+                {% if current_user.is_authenticated %}
+                    <a class="nav-item nav-link" href="{{url_for('logout')}}">{{nav_bar.logout}}</a>
+                {% else %}
+                    <a class="nav-item nav-link" href="{{url_for('login')}}">{{nav_bar.login}}</a>
+                    <a class="nav-item nav-link" href="{{url_for('register')}}">{{nav_bar.register}}</a>
+                {% endif %}
+
+              <a class="nav-item nav-link" href="{{url_for('home')}}">{{nav_bar.home}}</a>
+              <a class="nav-item nav-link" href="{{url_for('about')}}">{{nav_bar.about}}</a>
             </div>
           </div>
         </div>
@@ -49,6 +54,15 @@
           </div>
         </div>
         <div class="col-md-8 text-right">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {%if messages %}
+                    {%for category, message in messages %}
+                        <div class="alert alert-{{category}}">
+                            {{message}}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
           {% block content %}{% endblock %}
         </div>
       </div>

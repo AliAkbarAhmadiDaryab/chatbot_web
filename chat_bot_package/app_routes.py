@@ -1,11 +1,10 @@
-from flask import Flask, render_template, url_for
+from flask import render_template, url_for, flash, redirect
 import json
 
-from all_froms import RegistrationForm, LoginForm
-
-app = Flask(__name__)
-
-app.config['SECRET_KEY'] = '0650c9411b66221d947b0ea065d18008'
+from chat_bot_package import app, db, pass_crypt
+from chat_bot_package.all_froms import RegistrationForm, LoginForm
+from chat_bot_package.database_tables import User, MainTweet, ReplyTweet
+from flask_login import login_user, current_user, logout_user
 
 CONFIG = json.load(open('config/chatbot_config.json', 'rb'))
 tweets = [
@@ -27,7 +26,6 @@ default_tweets = [{
 tweet_titles = ['سیاسی', 'اجتماعی', 'طنز', 'ورزشی']
 sentiments = ['احساس خنثی', 'احساس مثبت', 'احساس منفی']
 saved_button = '   ذخیره   '
-print(CONFIG)
 
 
 @app.route("/")
@@ -45,18 +43,38 @@ def about():
                            side_bar=CONFIG['sidebar'])
 
 
-@app.route("/register")
+@app.route("/register", methods=['GET', 'POST'])
 def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
     form = RegistrationForm()
+    if form.validate_on_submit():
+        hash_password = pass_crypt.generate_password_hash(form.password.data).decode('utf-8')
+        new_user = User(username=form.username.data, email=form.email.data, password=hash_password)
+        db.session.add(new_user)
+        db.session.commit()
+        flash(f'کاربر جدید درست شد {form.username.data} ', 'success')
+        return redirect(url_for('login'))
+
     return render_template('register.html', title=CONFIG['general_info']['register'], form=form,
                            nav_bar=CONFIG['nav_bar'],
                            side_bar=CONFIG['sidebar'],
                            tweets=default_tweets)
 
 
-@app.route("/login")
+@app.route("/login", methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
     form = LoginForm()
+    if form.validate_on_submit():
+        logged_user = User.query.filter_by(email=form.email.data).first()
+        if logged_user and pass_crypt.check_password_hash(logged_user.password, form.password.data):
+            login_user(logged_user, remember=form.remember_me.data)
+            return redirect(url_for('home'))
+            flash('شما موفقانه وارد سیستم شدید', 'success')
+        else:
+            flash('اطلاعات وارد شده درست نیست', 'danger')
     return render_template('login.html', title=CONFIG['general_info']['login'], form=form,
                            nav_bar=CONFIG['nav_bar'],
                            side_bar=CONFIG['sidebar'],
@@ -64,5 +82,7 @@ def login():
                            )
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect(url_for('login'))

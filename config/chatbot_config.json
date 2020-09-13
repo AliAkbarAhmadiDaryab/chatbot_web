@@ -4,13 +4,15 @@
     "about": "درباره ما",
     "register": "ثبت نام",
     "login": "ورود به سیستم"
+
   },
     "nav_bar": {
       "home": "خانه",
       "about": "درباره ما",
       "web_page": "Chat-Bot",
       "login": "ورود به سیستم",
-      "register": "ثبت نام"
+      "register": "ثبت نام",
+      "logout": "خروج از سیستم"
     },
   "sidebar": {
       "tag": "اطلاعات آخرین توییت تگ زده شده",
