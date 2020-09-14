@@ -43,6 +43,15 @@
       <div class="row">
         <div class="col-md-4">
             <div class="content-section text-right">
+
+                <h6>{{side_bar.personal_info}}</h6>
+                <p class='text-muted'>
+                  <ul class="list-group ">
+                    <li class="list-group-item list-group-item-light text-right ">{{side_bar.email_address}}: {{current_user.email}}</li>
+                    <li class="list-group-item list-group-item-light text-right">{{side_bar.username}}: {{current_user.username}}</li>
+                  </ul>
+                </p>
+
                 <h6>{{side_bar.tag}}</h6>
                 <p class='text-muted'>
                   <ul class="list-group ">
@@ -52,7 +61,9 @@
                   </ul>
                 </p>
           </div>
+
         </div>
+
         <div class="col-md-8 text-right">
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {%if messages %}

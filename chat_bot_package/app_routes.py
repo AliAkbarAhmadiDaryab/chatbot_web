@@ -1,10 +1,10 @@
-from flask import render_template, url_for, flash, redirect
+from flask import render_template, url_for, flash, redirect, request
 import json
 
 from chat_bot_package import app, db, pass_crypt
 from chat_bot_package.all_froms import RegistrationForm, LoginForm
 from chat_bot_package.database_tables import User, MainTweet, ReplyTweet
-from flask_login import login_user, current_user, logout_user
+from flask_login import login_user, current_user, logout_user, login_required
 
 CONFIG = json.load(open('config/chatbot_config.json', 'rb'))
 tweets = [
@@ -30,6 +30,7 @@ saved_button = '   ذخیره   '
 
 @app.route("/")
 @app.route("/home")
+@login_required
 def home():
     return render_template("home.html", tweets=tweets, title=CONFIG['general_info']['title'], nav_bar=CONFIG['nav_bar'],
                            side_bar=CONFIG['sidebar'], tweet_titles=tweet_titles, sentiments=sentiments,
@@ -71,6 +72,9 @@ def login():
         logged_user = User.query.filter_by(email=form.email.data).first()
         if logged_user and pass_crypt.check_password_hash(logged_user.password, form.password.data):
             login_user(logged_user, remember=form.remember_me.data)
+            request_page = request.args.get('next')
+            if request_page:
+                return redirect(request_page)
             return redirect(url_for('home'))
             flash('شما موفقانه وارد سیستم شدید', 'success')
         else:

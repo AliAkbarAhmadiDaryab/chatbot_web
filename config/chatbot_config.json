@@ -19,6 +19,9 @@
       "last_tweet": "آخرین توییت",
       "tweet_title": "موضوع توییت",
       "tweet_sentiment": "احساس توییت",
-      "date": "ثبت نام"
+      "date": "ثبت نام",
+      "personal_info": "اطلاعات کاربری شما",
+      "email_address": "پست الکترونیکی",
+      "username": "شناسه کاربری"
     }
 }

@@ -9,5 +9,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 db = SQLAlchemy(app)
 pass_crypt = Bcrypt(app)
 login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+login_manager.login_message_category = 'info'
+login_manager.login_message = 'برای وارد شدن به صفحه مورد نظر لطفا اطلاعات خود را وارد کنید'
 
 from chat_bot_package import app_routes
