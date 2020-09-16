@@ -1,75 +1,53 @@
 {% extends "layout.html"%}
 
 {%block content%}
-    {% for tweet in tweets%}
-        <form>
-
-            <article class="media content-section">
-                <div class="media-body">
-                    <div class="article-metadata">
-                        <small class="text_muted">تاریخ توییت</small>
-                    </div>
-                    <p class="article-content">{{ tweet.text }}</p>
-                    <div class="content-section text-right">
-                        <div class="row">
-                            {%for sentiment in sentiments%}
-                                  <div class="col-sm">
-                                      <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                      <label class="form-check-label" for="exampleCheck1">{{sentiment}}</label>
-                                  </div>
+    <div class="content-section">
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <div class="row">
+                    <legend class="border-bottom mb-4 col-sm">
+                        {{form.id.label}}
+                    </legend>
+                    <legend class="border-bottom mb-4 col-sm">
+                        توییت جدید
+                    </legend>
+                </div>
+                <div class="form-group">
+                    {% if form.tweet_content.errors %}
+                        {{ form.tweet_content(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.tweet_content.errors %}
+                                <span>
+                                    {{error}}
+                                </span>
                             {% endfor %}
-
-                          <div class="col-sm">
-                              <div class="dropdown">
-                                  <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    انتخاب موضوع
-                                  </button>
-                                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                      {% for new_title in tweet_titles%}
-                                        <a class="dropdown-item text-right" href="#">{{new_title}}</a>
-                                      {% endfor %}
-                                  </div>
-                              </div>
-                          </div>
                         </div>
+                    {% else %}
+                        {{ form.tweet_content(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="row">
+                    <div class="col-sm dropdown">
+                        {{ form.tweet_topic.label(class="form-control-label ") }}
+                        {{ form.tweet_topic(class="dropdown")}}
                     </div>
-                    <ul class="list-group">
-                        {%for reply in tweet.replies%}
-                        <li class="list-group-item small"> <p> reply: {{ reply}}</p>
-                                <div class="content-section text-right">
-                                    <div class="row">
-                                     {%for sentiment in sentiments%}
-                                      <div class="col-sm">
-                                          <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                          <label class="form-check-label" for="exampleCheck1">{{sentiment}}</label>
-                                      </div>
-                                     {% endfor %}
-
-                                      <div class="col-sm">
-                                          <div class="dropdown">
-                                              <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                انتخاب موضوع
-                                              </button>
-                                              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                  {% for new_title in tweet_titles%}
-                                                    <a class="dropdown-item text-right" href="#">{{new_title}}</a>
-                                                  {% endfor %}
-                                              </div>
-                                          </div>
-                                        </div>
-                                </div>
-                                </div>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                    <div class="content-section">
-                        <button type="submit" class="btn btn-primary btn-sm">  {{saved_button}}  </button>
+                    <div class="col-sm dropdown">
+                        {{ form.tweet_sentiment.label(class="form-control-label ") }}
+                        {{ form.tweet_sentiment(class="dropdown")}}
                     </div>
                 </div>
+            </fieldset>
+            <div class="row">
+                <div class="form-group col-sm">
+                    {{ form.next(class="btn btn-outline-info") }}
+                </div>
+                <div class="form-group col-sm">
+                    {{ form.submit(class="btn btn-outline-info") }}
+                </div>
 
-            </article>
-
+            </div>
 
         </form>
-    {% endfor %}
+    </div>
 {% endblock content %}

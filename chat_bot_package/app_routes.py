@@ -2,7 +2,7 @@ from flask import render_template, url_for, flash, redirect, request
 import json
 
 from chat_bot_package import app, db, pass_crypt
-from chat_bot_package.all_froms import RegistrationForm, LoginForm
+from chat_bot_package.all_froms import RegistrationForm, LoginForm, TweetForm
 from chat_bot_package.database_tables import User, MainTweet, ReplyTweet
 from flask_login import login_user, current_user, logout_user, login_required
 
@@ -29,12 +29,18 @@ saved_button = '   ذخیره   '
 
 
 @app.route("/")
-@app.route("/home")
+@app.route("/home", methods=['GET', 'POST'])
 @login_required
 def home():
-    return render_template("home.html", tweets=tweets, title=CONFIG['general_info']['title'], nav_bar=CONFIG['nav_bar'],
-                           side_bar=CONFIG['sidebar'], tweet_titles=tweet_titles, sentiments=sentiments,
-                           saved_button=saved_button)
+    form = TweetForm()
+    if form.validate_on_submit():
+        flash(f' ذخیره شد {form.id.data} توییت با شناسه: ', 'success')
+        return redirect(url_for('home'))
+    else:
+        return render_template("home.html", tweets=tweets, title=CONFIG['general_info']['title'],
+                               nav_bar=CONFIG['nav_bar'],
+                               side_bar=CONFIG['sidebar'], tweet_titles=tweet_titles, sentiments=sentiments,
+                               app_buttons=CONFIG['buttons'], form=form)
 
 
 @app.route("/about")
@@ -90,3 +96,4 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('login'))
+

@@ -1,7 +1,12 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, SelectField, HiddenField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from chat_bot_package.database_tables import User
+import json
+
+TOPIC_CHOICES = json.load(open('config/chatbot_config.json', 'rb'))['topic_choices']
+SENTIMENT_CHOICES = json.load(open('config/chatbot_config.json', 'rb'))['sentiment_choices']
+BUTTONS = json.load(open('config/chatbot_config.json', 'rb'))['buttons']
 
 
 class RegistrationForm(FlaskForm):
@@ -27,3 +32,12 @@ class LoginForm(FlaskForm):
     password = PasswordField('پسورد', validators=[DataRequired()])
     remember_me = BooleanField('مرا به خاطر بسپارید')
     submit = SubmitField('ورود به سیستم')
+
+
+class TweetForm(FlaskForm):
+    id = HiddenField('شناسه', validators=[DataRequired()])
+    tweet_content = TextAreaField('توییت', validators=[DataRequired()])
+    tweet_topic = SelectField(' موضوع توییت', choices=TOPIC_CHOICES)
+    tweet_sentiment = SelectField(' احساس توییت', choices=SENTIMENT_CHOICES)
+    submit = SubmitField(BUTTONS['save'])
+    next = SubmitField(BUTTONS['reject'])

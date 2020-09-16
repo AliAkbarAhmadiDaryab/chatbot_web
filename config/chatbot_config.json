@@ -23,5 +23,14 @@
       "personal_info": "اطلاعات کاربری شما",
       "email_address": "پست الکترونیکی",
       "username": "شناسه کاربری"
-    }
+    },
+  "buttons": {
+    "save": "   ذخیره   ",
+    "reject": "   بعدی   "
+  },
+   "reasons": {
+    "short": ""
+  },
+  "topic_choices": ["سیاسی","اجتماعی","طنز","ورزشی"],
+  "sentiment_choices": ["مثبت","منفی","خنثی"]
 }
