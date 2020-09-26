@@ -7,10 +7,10 @@
             <fieldset class="form-group">
                 <div class="row">
                     <legend class="border-bottom mb-4 col-sm">
-                        {{form.id.label}}
+                        {{form.id.data}} :{{form.id.label}}
                     </legend>
-                    <legend class="border-bottom mb-4 col-sm">
-                        توییت جدید
+                    <legend class="border-bottom mb-4 col-sm text-right">
+                        {{form.tweet_content.label}}
                     </legend>
                 </div>
                 <div class="form-group">
@@ -24,7 +24,7 @@
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.tweet_content(class="form-control form-control-lg") }}
+                        {{ form.tweet_content(class="form-control form-control-sm text-right") }}
                     {% endif %}
                 </div>
                 <div class="row">

@@ -36,7 +36,7 @@ class LoginForm(FlaskForm):
 
 class TweetForm(FlaskForm):
     id = HiddenField('شناسه', validators=[DataRequired()])
-    tweet_content = TextAreaField('توییت', validators=[DataRequired()])
+    tweet_content = TextAreaField('توییت بعدی', validators=[DataRequired()])
     tweet_topic = SelectField(' موضوع توییت', choices=TOPIC_CHOICES)
     tweet_sentiment = SelectField(' احساس توییت', choices=SENTIMENT_CHOICES)
     submit = SubmitField(BUTTONS['save'])

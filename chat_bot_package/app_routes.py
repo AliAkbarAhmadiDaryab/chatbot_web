@@ -3,9 +3,10 @@ import json
 
 from chat_bot_package import app, db, pass_crypt
 from chat_bot_package.all_froms import RegistrationForm, LoginForm, TweetForm
-from chat_bot_package.database_tables import User, MainTweet, ReplyTweet
+from chat_bot_package.database_tables import User, MainTweet, ReplyTweet, MainTweetUser, ReplyTweetUser
 from flask_login import login_user, current_user, logout_user, login_required
 
+max_id_main_tweet = db.session.query(db.func.max(MainTweet.id).label('Max ID')).first()[0]
 CONFIG = json.load(open('config/chatbot_config.json', 'rb'))
 tweets = [
     {
@@ -32,15 +33,50 @@ saved_button = '   ذخیره   '
 @app.route("/home", methods=['GET', 'POST'])
 @login_required
 def home():
+    flag_last_tweet = False
     form = TweetForm()
     if form.validate_on_submit():
         flash(f' ذخیره شد {form.id.data} توییت با شناسه: ', 'success')
         return redirect(url_for('home'))
     else:
+        max_id = db.session.query(db.func.max(MainTweetUser.id_main).label('Max ID')).filter_by(
+            user_id=current_user.id).first()[0]
+        if max_id:
+            if max_id < max_id_main_tweet:
+                while max_id < max_id_main_tweet:
+                    main_tweet = MainTweet.query.get(max_id+1)
+                    if main_tweet:
+                        reply_tweet = ReplyTweet.query.filter_by(id_main=main_tweet.id).all()
+                        break
+                    max_id += 1
+            else:
+                flag_last_tweet = True
+        else:
+            max_id = 0
+            main_tweet = MainTweet.query.get(max_id+1)
+            reply_tweet = ReplyTweet.query.filter_by(id_main=main_tweet.id).all()
+
+        if flag_last_tweet:
+            form.tweet_content.data = CONFIG['messages']['last_tweet']
+            form.id.data = max_id_main_tweet + 1
+        else:
+            form.id.data = max_id
+            form.tweet_content.data = main_tweet.tweet
         return render_template("home.html", tweets=tweets, title=CONFIG['general_info']['title'],
                                nav_bar=CONFIG['nav_bar'],
                                side_bar=CONFIG['sidebar'], tweet_titles=tweet_titles, sentiments=sentiments,
                                app_buttons=CONFIG['buttons'], form=form)
+
+
+@app.route("/next")
+@login_required
+def next_tweet():
+    main_tweet = MainTweet(id=2, tweeter_id=2346,
+                           tweet='مشکل از او‌نیست مشکل از فهم هغه دغه هاست')
+    db.session.execute('pragma foreign_keys=on')
+    db.session.add(main_tweet)
+    db.session.commit()
+    return render_template('Hello world')
 
 
 @app.route("/about")
