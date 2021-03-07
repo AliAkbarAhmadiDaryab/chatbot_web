@@ -84,3 +84,37 @@
         </form>
     {% endfor %}
 {% endblock content %}
+
+ <!--  Reply Tweet Part -->
+                <div class="form-group row">
+                    <legend class="border-bottom mb-4 col-sm text-right">
+                        {{form.replies[0].tweet_content.label}}
+                    </legend>
+                </div>
+                {% for field in form.replies %}
+                    <div class="form-group">
+                        {% if field.tweet_content.errors %}
+                            {{ field.tweet_content(class="form-control form-control-lg is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in field.tweet_content.errors %}
+                                    <span>
+                                        {{error}}
+                                    </span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ field.tweet_content(class="form-control form-control-sm text-right") }}
+                        {% endif %}
+                    </div>
+                    <div class="row">
+                        <div class="col-sm dropdown form-group">
+                            {{ field.tweet_topic.label(class="form-control-label ") }}
+                            {{ field.tweet_topic(class="dropdown")}}
+                        </div>
+                        <div class="col-sm dropdown">
+                            {{ field.tweet_sentiment.label(class="form-control-label ") }}
+                            {{ field.tweet_sentiment(class="dropdown")}}
+                        </div>
+                    </div>
+
+                {% endfor %}

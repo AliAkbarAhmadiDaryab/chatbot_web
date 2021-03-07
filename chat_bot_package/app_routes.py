@@ -2,11 +2,11 @@ from flask import render_template, url_for, flash, redirect, request
 import json
 
 from chat_bot_package import app, db, pass_crypt
-from chat_bot_package.all_froms import RegistrationForm, LoginForm, TweetForm
-from chat_bot_package.database_tables import User, MainTweet, ReplyTweet, MainTweetUser, ReplyTweetUser
+from chat_bot_package.all_froms import RegistrationForm, LoginForm, TweetForm, ReplyForm
+from chat_bot_package.database_tables import User, MainTweet, ReplyTweet, MainTweetTagger, ReplyTweetTagger
 from flask_login import login_user, current_user, logout_user, login_required
 
-max_id_main_tweet = db.session.query(db.func.max(MainTweet.id).label('Max ID')).first()[0]
+# max_id_main_tweet = db.session.query(db.func.max(MainTweet.id).label('Max ID')).first()[0]
 CONFIG = json.load(open('config/chatbot_config.json', 'rb'))
 tweets = [
     {
@@ -29,39 +29,18 @@ sentiments = ['احساس خنثی', 'احساس مثبت', 'احساس منفی
 saved_button = '   ذخیره   '
 
 
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 @app.route("/home", methods=['GET', 'POST'])
 @login_required
 def home():
     flag_last_tweet = False
     form = TweetForm()
     if form.validate_on_submit():
-        flash(f' ذخیره شد {form.id.data} توییت با شناسه: ', 'success')
+        print('Hello world 1')
+        flash(f' توییت با شناسه {form.id.data} ذخیره شد ', 'success')
         return redirect(url_for('home'))
     else:
-        max_id = db.session.query(db.func.max(MainTweetUser.id_main).label('Max ID')).filter_by(
-            user_id=current_user.id).first()[0]
-        if max_id:
-            if max_id < max_id_main_tweet:
-                while max_id < max_id_main_tweet:
-                    main_tweet = MainTweet.query.get(max_id+1)
-                    if main_tweet:
-                        reply_tweet = ReplyTweet.query.filter_by(id_main=main_tweet.id).all()
-                        break
-                    max_id += 1
-            else:
-                flag_last_tweet = True
-        else:
-            max_id = 0
-            main_tweet = MainTweet.query.get(max_id+1)
-            reply_tweet = ReplyTweet.query.filter_by(id_main=main_tweet.id).all()
 
-        if flag_last_tweet:
-            form.tweet_content.data = CONFIG['messages']['last_tweet']
-            form.id.data = max_id_main_tweet + 1
-        else:
-            form.id.data = max_id
-            form.tweet_content.data = main_tweet.tweet
         return render_template("home.html", tweets=tweets, title=CONFIG['general_info']['title'],
                                nav_bar=CONFIG['nav_bar'],
                                side_bar=CONFIG['sidebar'], tweet_titles=tweet_titles, sentiments=sentiments,
@@ -71,8 +50,8 @@ def home():
 @app.route("/next")
 @login_required
 def next_tweet():
-    main_tweet = MainTweet(id=2, tweeter_id=2346,
-                           tweet='مشکل از او‌نیست مشکل از فهم هغه دغه هاست')
+    main_tweet = ReplyTweet(id=4, tweeter_id=2347,
+                            reply_tweet='توییت شماره دوم', id_main=2)
     db.session.execute('pragma foreign_keys=on')
     db.session.add(main_tweet)
     db.session.commit()
@@ -132,4 +111,3 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('login'))
-

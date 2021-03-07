@@ -3,11 +3,13 @@
 {%block content%}
     <div class="content-section">
         <form method="POST" action="">
-            {{ form.hidden_tag() }}
+             {{ form.hidden_tag() }}
             <fieldset class="form-group">
+
                 <div class="row">
                     <legend class="border-bottom mb-4 col-sm">
                         {{form.id.data}} :{{form.id.label}}
+                        {{ form.id(class="form-control form-control-lg is-invalid") }}
                     </legend>
                     <legend class="border-bottom mb-4 col-sm text-right">
                         {{form.tweet_content.label}}
@@ -27,7 +29,7 @@
                         {{ form.tweet_content(class="form-control form-control-sm text-right") }}
                     {% endif %}
                 </div>
-                <div class="row">
+                <div class="form-group row">
                     <div class="col-sm dropdown">
                         {{ form.tweet_topic.label(class="form-control-label ") }}
                         {{ form.tweet_topic(class="dropdown")}}
@@ -37,17 +39,48 @@
                         {{ form.tweet_sentiment(class="dropdown")}}
                     </div>
                 </div>
+
+
+                <div class="form-group row">
+                    <legend class="border-bottom mb-4 col-sm text-right">
+                        {{form.replies[0].id.label}}
+                    </legend>
+                </div>
+                <div class="form-group">
+
+                 {% for field in form.replies %}
+                    {% if field.reply_content.errors %}
+                        {{ field.tweet_content(class="form-control form-control-lg") }}
+                        <div class="invalid-feedback">
+                            {% for error in field.tweet_content.errors %}
+                                <span>
+                                    {{error}}
+                                </span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ field.reply_content(class="form-control form-control-sm text-right") }}
+                    {% endif %}
+
+                    <div class="row from-group">
+                        <div class="col-sm dropdown form-group">
+                            {{ field.reply_topic.label(class="form-control-label ") }}
+                            {{ field.reply_topic(class="dropdown")}}
+                        </div>
+                        <div class="col-sm dropdown from-group">
+                            {{ field.reply_sentiment.label(class="form-control-label ") }}
+                            {{ field.reply_sentiment(class="dropdown")}}
+                        </div>
+                    </div>
+
+                {% endfor %}
+                </div>
             </fieldset>
-            <div class="row">
+            <div class="form-group row">
                 <div class="form-group col-sm">
                     {{ form.next(class="btn btn-outline-info") }}
                 </div>
-                <div class="form-group col-sm">
-                    {{ form.submit(class="btn btn-outline-info") }}
-                </div>
-
             </div>
-
         </form>
     </div>
 {% endblock content %}

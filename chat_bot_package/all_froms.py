@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, SelectField, HiddenField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, SelectField, \
+    HiddenField, FormField, FieldList, Form
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from chat_bot_package.database_tables import User
 import json
@@ -27,6 +28,13 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('شناسه کاربری شما موجود است')
 
 
+class ReplyForm(Form):
+    id = HiddenField('شناسه')
+    reply_content = TextAreaField('ریتوییت')
+    reply_topic = SelectField(' موضوع توییت', choices=TOPIC_CHOICES)
+    reply_sentiment = SelectField(' احساس توییت', choices=SENTIMENT_CHOICES)
+
+
 class LoginForm(FlaskForm):
     email = StringField('ایمیل آدرس', validators=[DataRequired(), Email()])
     password = PasswordField('پسورد', validators=[DataRequired()])
@@ -39,5 +47,6 @@ class TweetForm(FlaskForm):
     tweet_content = TextAreaField('توییت بعدی', validators=[DataRequired()])
     tweet_topic = SelectField(' موضوع توییت', choices=TOPIC_CHOICES)
     tweet_sentiment = SelectField(' احساس توییت', choices=SENTIMENT_CHOICES)
+    replies = FieldList(FormField(ReplyForm), min_entries=1)
     submit = SubmitField(BUTTONS['save'])
     next = SubmitField(BUTTONS['reject'])
