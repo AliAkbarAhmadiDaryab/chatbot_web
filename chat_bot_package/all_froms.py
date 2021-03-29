@@ -5,6 +5,14 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationE
 from chat_bot_package.database_tables import User
 import json
 
+
+# TOPIC_CHOICES = ["خنثی","مثبت","منفی"]
+# SENTIMENT_CHOICES = ["خنثی","مثبت","منفی"]
+# BUTTONS = {
+#     "save": "   ذخیره   ",
+#     "reject": "   بعدی   "
+#   }
+
 TOPIC_CHOICES = json.load(open('config/chatbot_config.json', 'rb'))['topic_choices']
 SENTIMENT_CHOICES = json.load(open('config/chatbot_config.json', 'rb'))['sentiment_choices']
 BUTTONS = json.load(open('config/chatbot_config.json', 'rb'))['buttons']
@@ -29,10 +37,11 @@ class RegistrationForm(FlaskForm):
 
 
 class ReplyForm(Form):
-    id = HiddenField('شناسه')
+    tweeter_id = HiddenField('شناسه')
     reply_content = TextAreaField('ریتوییت')
     reply_topic = SelectField(' موضوع توییت', choices=TOPIC_CHOICES)
     reply_sentiment = SelectField(' احساس توییت', choices=SENTIMENT_CHOICES)
+    id_backup = StringField()
 
 
 class LoginForm(FlaskForm):
@@ -47,6 +56,6 @@ class TweetForm(FlaskForm):
     tweet_content = TextAreaField('توییت بعدی', validators=[DataRequired()])
     tweet_topic = SelectField(' موضوع توییت', choices=TOPIC_CHOICES)
     tweet_sentiment = SelectField(' احساس توییت', choices=SENTIMENT_CHOICES)
-    replies = FieldList(FormField(ReplyForm), min_entries=1)
+    replies = FieldList(FormField(ReplyForm), min_entries=0)
     submit = SubmitField(BUTTONS['save'])
     next = SubmitField(BUTTONS['reject'])

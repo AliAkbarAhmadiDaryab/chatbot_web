@@ -20,25 +20,23 @@ class User(db.Model, UserMixin):
 
 
 class MainTweet(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    tweeter_id = db.Column(db.Integer, nullable=False, unique=True)
+    tweeter_id = db.Column(db.Integer, primary_key=True)
     tweet = db.Column(db.String(300), nullable=False)
     replies = db.relationship('ReplyTweet', backref='reply', lazy=True)
     tagger_user = db.relationship('MainTweetTagger', backref='tagger_user', lazy=True)
 
     def __repr__(self):
-        return f"Main Tweet: ID: {self.id},  Tweeter ID: {self.tweeter_id}  Tweet: {self.tweet}"
+        return f"Main Tweet: ID: {self.tweeter_id},  Tweet: {self.tweet}"
 
 
 class ReplyTweet(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    tweeter_id = db.Column(db.Integer, nullable=False, unique=True)
+    tweeter_id = db.Column(db.Integer, primary_key=True)
     reply_tweet = db.Column(db.String(300), nullable=False)
     tagger_user = db.relationship('ReplyTweetTagger', backref='tagger_user', lazy=True)
-    tweet_id = db.Column(db.Integer, db.ForeignKey('main_tweet.id'), nullable=False)
+    tweet_id = db.Column(db.Integer, db.ForeignKey('main_tweet.tweeter_id'), nullable=False)
 
     def __repr__(self):
-        return f"Reply Tweet: Id: {self.id},  Tweeter ID: {self.tweeter_id}  Main Tweet ID: {self.tweet_id}, " \
+        return f"Reply ID: {self.tweeter_id}  Main Tweet ID: {self.tweet_id}, " \
                f"reply: {self.reply_tweet}"
 
 
@@ -47,7 +45,7 @@ class MainTweetTagger(db.Model):
     sentiment = db.Column(db.String(50), nullable=True)
     topic = db.Column(db.String(50), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    id_main = db.Column(db.Integer, db.ForeignKey('main_tweet.id'), nullable=False)
+    id_main = db.Column(db.Integer, db.ForeignKey('main_tweet.tweeter_id'), nullable=False)
 
     def __repr__(self):
         return f"Reply Tweet: Id: {self.id},  Main Tweet ID: {self.id_main}, user: {self.user_id}, " \
@@ -59,7 +57,7 @@ class ReplyTweetTagger(db.Model):
     sentiment = db.Column(db.String(50), nullable=True)
     topic = db.Column(db.String(50), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    id_reply = db.Column(db.Integer, db.ForeignKey('reply_tweet.id'), nullable=False)
+    id_reply = db.Column(db.Integer, db.ForeignKey('reply_tweet.tweeter_id'), nullable=False)
 
     def __repr__(self):
         return f"Reply Tweet: Id: {self.id},  Main Tweet ID: {self.id_reply}, user: {self.user_id}, " \

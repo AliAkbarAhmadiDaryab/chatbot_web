@@ -59,7 +59,12 @@
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ field.reply_content(class="form-control form-control-sm text-right") }}
+
+                        {{ form.hidden_tag() }}
+                        {{field.tweeter_id.data}}: {{field.tweeter_id.label}}
+                        {{field.tweeter_id(class="form-control form-control-lg is-invalid") }}
+
+                        {{ field.reply_content.data(class="form-control form-control-sm text-right") }}
                     {% endif %}
 
                     <div class="row from-group">
