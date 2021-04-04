@@ -5,6 +5,8 @@ import json
 import codecs
 
 
+
+
 def get_file_names(directory=r"E:\98-1\twitter\twitter_data\*reply*"):
     file_names = glob(directory)
     file_names = [os.path.basename(x) for x in file_names]
@@ -13,7 +15,7 @@ def get_file_names(directory=r"E:\98-1\twitter\twitter_data\*reply*"):
 
 def read_ids(file_name, tweets_dict):
     with open(r'E:\98-1\twitter\twitter_data\{}'.format(file_name), 'r', encoding='Latin-1') as read_file:
-        all_ids =read_file.readlines()
+        all_ids = read_file.readlines()
         main_tweet_dict = dict()
         for ids in all_ids:
             if len(ids) > 20:
