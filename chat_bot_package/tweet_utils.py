@@ -1,8 +1,17 @@
 from glob import glob
-import os
 from datetime import datetime, timedelta
 import json
 import codecs
+import tweepy
+import os
+import time
+
+config_path = os.path.dirname(__file__)
+tweeter_keys = json.load(open(os.path.join(config_path, 'config/keys.json'), 'rb'))
+
+auth = tweepy.OAuthHandler(tweeter_keys['API key'], tweeter_keys['API secret key'])
+auth.set_access_token(tweeter_keys['Access token'], tweeter_keys['Access token secret'])
+api = tweepy.API(auth)
 
 
 class RawTweet:
@@ -67,7 +76,8 @@ class RawTweet:
         file_name_list.append(file_name_date_two_neg.strftime('%Y-%m-%d'))
         ids_tweets_dict = dict()
         for file_name in file_name_list:
-            with open(os.path.join(RawTweet.dir_location, '{}.txt').format(file_name[:10]), 'r', encoding='utf-8') as read_file:
+            with open(os.path.join(RawTweet.dir_location, '{}.txt').format(file_name[:10]), 'r',
+                      encoding='utf-8') as read_file:
                 ids_tweets = read_file.readlines()
                 for id_tweet in ids_tweets:
                     if len(id_tweet) > 18:
@@ -84,3 +94,57 @@ class RawTweet:
                         except:
                             continue
         return ids_tweets_dict
+
+    @staticmethod
+    def get_tweet(tweet_id):
+        tweets = api.statuses_lookup([tweet_id])
+        if not tweets == []:
+            tweets = json.dumps(tweets[0]._json)
+            tweets = json.loads(tweets)
+            text = tweets['text']
+            return text
+        return None
+
+
+class DBTweet:
+    def __init__(self, file_path):
+        self.location = file_path
+
+    def save_to_db(self):
+        from chat_bot_package import db
+        from chat_bot_package.database_tables import MainTweet, ReplyTweet
+        with open(self.location, 'r', encoding='utf-8') as read_file:
+            tweet_replies = json.load(read_file)
+            for t_id, t_data in tweet_replies.items():
+                t_tweet = t_data['tweet']
+                if isinstance(t_tweet, list):
+                    t_tweet = " ".join(t_tweet)
+                if len(list(MainTweet.query.filter_by(tweeter_id=t_id))) == 0:
+                    time.sleep(2)
+                    t_id_replies = t_data['ids_replied']
+                    t_replies = t_data['replied_tweets']
+                    if len(t_id_replies) > 2:
+                        m_tweet = MainTweet(tweeter_id=t_id, tweet=t_tweet)
+                        db.session.add(m_tweet)
+                        db.session.commit()
+                        print('Main Tweet: ', t_tweet)
+                        for r_id, r_reply in zip(t_id_replies, t_replies):
+                            if len(list(ReplyTweet.query.filter_by(tweeter_id=r_id))) == 0:
+                                time.sleep(2)
+                                r_tweet = ReplyTweet(tweeter_id=r_id, reply_tweet=r_reply[1], tweet_id=t_id)
+                                db.session.add(r_tweet)
+                                db.session.commit()
+                                print('Reply Tweet: ', r_reply[1])
+
+    def delete_from_db(self):
+        from chat_bot_package import db
+        from chat_bot_package.database_tables import MainTweet, ReplyTweet
+        with open(self.location, 'r', encoding='utf-8') as read_file:
+            tweet_replies = json.load(read_file)
+            for t_id, t_data in tweet_replies.items():
+                t_id_replies = t_data['ids_replied']
+                if len(t_id_replies) < 2:
+                    if len(list(MainTweet.query.filter_by(tweeter_id=t_id))) == 1:
+                        MainTweet.query.filter_by(tweeter_id=t_id).delete()
+                        print(t_id)
+                        db.session.commit()

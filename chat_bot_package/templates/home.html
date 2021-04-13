@@ -84,7 +84,19 @@
             <div class="form-group row">
                 <div class="form-group col-sm">
                     {{ form.next(class="btn btn-outline-info") }}
+                    {{ form.submit(class="btn btn-outline-info") }}
                 </div>
+            </div>
+            <div class="col-md-8 text-right">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {%if messages %}
+                        {%for category, message in messages %}
+                            <div class="alert alert-{{category}}">
+                                {{message}}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
             </div>
         </form>
     </div>

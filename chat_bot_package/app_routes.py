@@ -1,14 +1,14 @@
 from flask import render_template, url_for, flash, redirect, request
 import json
-
+import  os
 from chat_bot_package import app, db, pass_crypt
 from chat_bot_package.all_froms import RegistrationForm, LoginForm, TweetForm, ReplyForm
 from chat_bot_package.database_tables import User, MainTweet, ReplyTweet, MainTweetTagger, ReplyTweetTagger
 from flask_login import login_user, current_user, logout_user, login_required
-from chat_bot_package.read_tweet_by_id import get_tweet
-from collections import namedtuple
+from chat_bot_package.tweet_utils import RawTweet
 
-CONFIG = json.load(open('config/chatbot_config.json', 'rb'))
+config_path = os.path.dirname(__file__)
+CONFIG = json.load(open(os.path.join(config_path, 'config/chatbot_config.json'), 'rb'))
 tweets = [
     {
         "text": "اولین توییت ما",
@@ -36,17 +36,21 @@ saved_button = '   ذخیره   '
 def home():
     form = TweetForm()
     if form.validate_on_submit():
-        main_tweet_tagger = MainTweetTagger(sentiment=form.tweet_sentiment.data, topic=form.tweet_topic.data,
-                                            user_id=current_user.id, id_main=form.id.data)
-        db.session.add(main_tweet_tagger)
-        db.session.commit()
-        for fr in form.replies:
-            reply_tweet_tagger = ReplyTweetTagger(sentiment=fr.reply_sentiment.data, topic=fr.reply_topic.data,
-                                                  user_id=current_user.id, id_reply=fr.tweeter_id.data)
-            db.session.add(reply_tweet_tagger)
+        if form.submit.data:
+            main_tweet_tagger = MainTweetTagger(sentiment=form.tweet_sentiment.data, topic=form.tweet_topic.data,
+                                                user_id=current_user.id, id_main=form.id.data)
+            db.session.add(main_tweet_tagger)
             db.session.commit()
-        flash(f' توییت با شناسه {form.id.data} ذخیره شد ', 'success')
-        return redirect(url_for('home'))
+            for fr in form.replies:
+                reply_tweet_tagger = ReplyTweetTagger(sentiment=fr.reply_sentiment.data, topic=fr.reply_topic.data,
+                                                      user_id=current_user.id, id_reply=fr.tweeter_id.data)
+                db.session.add(reply_tweet_tagger)
+                db.session.commit()
+            flash(f' توییت با شناسه {form.id.data} ذخیره شد ', 'success')
+            return redirect(url_for('home'))
+        else:
+            flash(f' نمایش توییت بعدی ', 'info')
+            return redirect(url_for('home'))
     else:
         tweets_all = db.session.query(MainTweet, MainTweetTagger).outerjoin(MainTweetTagger,
                                       (MainTweet.tweeter_id == MainTweetTagger.id_main) &
@@ -58,7 +62,7 @@ def home():
                 user_tweeter_id = tweet[0].tweeter_id
                 user_tweet_text = tweet[0].tweet
                 if str(user_tweeter_id) in user_tweet_text:
-                    read_tweet = get_tweet(user_tweeter_id)
+                    read_tweet = RawTweet.get_tweet(user_tweeter_id)
                     if read_tweet is not None:
                         db.session.query(MainTweet).filter(MainTweet.tweeter_id == user_tweeter_id).update(
                             {MainTweet.tweet: read_tweet}, synchronize_session=False)

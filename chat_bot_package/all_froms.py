@@ -4,18 +4,14 @@ from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextA
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from chat_bot_package.database_tables import User
 import json
+import os
 
 
-# TOPIC_CHOICES = ["خنثی","مثبت","منفی"]
-# SENTIMENT_CHOICES = ["خنثی","مثبت","منفی"]
-# BUTTONS = {
-#     "save": "   ذخیره   ",
-#     "reject": "   بعدی   "
-#   }
-
-TOPIC_CHOICES = json.load(open('config/chatbot_config.json', 'rb'))['topic_choices']
-SENTIMENT_CHOICES = json.load(open('config/chatbot_config.json', 'rb'))['sentiment_choices']
-BUTTONS = json.load(open('config/chatbot_config.json', 'rb'))['buttons']
+config_path = os.path.dirname(__file__)
+configs = json.load(open(os.path.join(config_path, 'config/chatbot_config.json'), 'rb'))
+TOPIC_CHOICES = configs['topic_choices']
+SENTIMENT_CHOICES = configs['sentiment_choices']
+BUTTONS = configs['buttons']
 
 
 class RegistrationForm(FlaskForm):
