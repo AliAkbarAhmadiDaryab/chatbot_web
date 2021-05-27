@@ -11,6 +11,7 @@ config_path = os.path.dirname(__file__)
 configs = json.load(open(os.path.join(config_path, 'config/chatbot_config.json'), 'rb'))
 TOPIC_CHOICES = configs['topic_choices']
 SENTIMENT_CHOICES = configs['sentiment_choices']
+STYLE_CHOICES = configs['style_choices']
 BUTTONS = configs['buttons']
 
 
@@ -37,6 +38,7 @@ class ReplyForm(Form):
     reply_content = TextAreaField('ریتوییت')
     reply_topic = SelectField(' موضوع توییت', choices=TOPIC_CHOICES)
     reply_sentiment = SelectField(' احساس توییت', choices=SENTIMENT_CHOICES)
+    reply_style = SelectField(' سلیقه توییت', choices=STYLE_CHOICES)
     id_backup = StringField()
 
 
@@ -52,6 +54,7 @@ class TweetForm(FlaskForm):
     tweet_content = TextAreaField('توییت بعدی', validators=[DataRequired()])
     tweet_topic = SelectField(' موضوع توییت', choices=TOPIC_CHOICES)
     tweet_sentiment = SelectField(' احساس توییت', choices=SENTIMENT_CHOICES)
+    tweet_style = SelectField('سلیقه توییت', choices=STYLE_CHOICES)
     replies = FieldList(FormField(ReplyForm), min_entries=0)
     submit = SubmitField(BUTTONS['save'])
     next = SubmitField(BUTTONS['reject'])

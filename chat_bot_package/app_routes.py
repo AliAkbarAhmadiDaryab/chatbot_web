@@ -1,6 +1,6 @@
 from flask import render_template, url_for, flash, redirect, request
 import json
-import  os
+import os
 from chat_bot_package import app, db, pass_crypt
 from chat_bot_package.all_froms import RegistrationForm, LoginForm, TweetForm, ReplyForm
 from chat_bot_package.database_tables import User, MainTweet, ReplyTweet, MainTweetTagger, ReplyTweetTagger
@@ -27,6 +27,7 @@ default_tweets = [{
 
 tweet_titles = ['سیاسی', 'اجتماعی', 'طنز', 'ورزشی']
 sentiments = ['احساس خنثی', 'احساس مثبت', 'احساس منفی']
+styles = ['مودبانه', 'محاوره', 'ادبی', 'عامیانه', 'رسمی']
 saved_button = '   ذخیره   '
 
 
@@ -38,12 +39,14 @@ def home():
     if form.validate_on_submit():
         if form.submit.data:
             main_tweet_tagger = MainTweetTagger(sentiment=form.tweet_sentiment.data, topic=form.tweet_topic.data,
-                                                user_id=current_user.id, id_main=form.id.data)
+                                                user_id=current_user.id, style=form.tweet_style.data,
+                                                id_main=form.id.data)
             db.session.add(main_tweet_tagger)
             db.session.commit()
             for fr in form.replies:
                 reply_tweet_tagger = ReplyTweetTagger(sentiment=fr.reply_sentiment.data, topic=fr.reply_topic.data,
-                                                      user_id=current_user.id, id_reply=fr.tweeter_id.data)
+                                                      user_id=current_user.id, style=fr.reply_style.data,
+                                                      id_reply=fr.tweeter_id.data)
                 db.session.add(reply_tweet_tagger)
                 db.session.commit()
             flash(f' توییت با شناسه {form.id.data} ذخیره شد ', 'success')
@@ -69,7 +72,6 @@ def home():
                         db.session.commit()
                         user_tweet_text = read_tweet
                         break
-
         form.id.data = user_tweeter_id
         form.tweet_content.data = user_tweet_text
         reply_tweets = ReplyTweet.query.filter_by(tweet_id=user_tweeter_id).all()
@@ -85,6 +87,7 @@ def home():
         return render_template("home.html", tweets=tweets, title=CONFIG['general_info']['title'],
                                nav_bar=CONFIG['nav_bar'],
                                side_bar=CONFIG['sidebar'], tweet_titles=tweet_titles, sentiments=sentiments,
+                               style=styles,
                                app_buttons=CONFIG['buttons'], form=form)
 
 

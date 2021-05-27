@@ -38,6 +38,10 @@
                         {{ form.tweet_sentiment.label(class="form-control-label ") }}
                         {{ form.tweet_sentiment(class="dropdown")}}
                     </div>
+                    <div class="col-sm dropdown">
+                        {{ form.tweet_style.label(class="form-control-label ") }}
+                        {{ form.tweet_style(class="dropdown")}}
+                    </div>
                 </div>
 
 
@@ -75,6 +79,10 @@
                         <div class="col-sm dropdown from-group">
                             {{ field.reply_sentiment.label(class="form-control-label ") }}
                             {{ field.reply_sentiment(class="dropdown")}}
+                        </div>
+                        <div class="col-sm dropdown from-group">
+                            {{ field.reply_style.label(class="form-control-label ") }}
+                            {{ field.reply_style(class="dropdown")}}
                         </div>
                     </div>
 

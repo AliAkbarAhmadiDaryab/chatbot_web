@@ -44,6 +44,7 @@ class MainTweetTagger(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sentiment = db.Column(db.String(50), nullable=True)
     topic = db.Column(db.String(50), nullable=True)
+    style = db.Column(db.String(50), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     id_main = db.Column(db.Integer, db.ForeignKey('main_tweet.tweeter_id'), nullable=False)
 
@@ -56,6 +57,7 @@ class ReplyTweetTagger(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sentiment = db.Column(db.String(50), nullable=True)
     topic = db.Column(db.String(50), nullable=True)
+    style = db.Column(db.String(50), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     id_reply = db.Column(db.Integer, db.ForeignKey('reply_tweet.tweeter_id'), nullable=False)
 
