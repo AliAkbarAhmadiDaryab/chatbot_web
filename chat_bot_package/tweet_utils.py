@@ -14,6 +14,7 @@ auth.set_access_token(tweeter_keys['Access token'], tweeter_keys['Access token s
 api = tweepy.API(auth)
 
 
+
 class RawTweet:
     def __init__(self, file_pattern=r"E:\98-1\twitter\twitter_data\*reply*",
                  dir_location=r"E:\98-1\twitter\twitter_data"):
