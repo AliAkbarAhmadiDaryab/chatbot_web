@@ -65,13 +65,13 @@ def home():
             if tweet[1] is None:
                 user_tweeter_id = tweet[0].tweeter_id
                 user_tweet_text = tweet[0].tweet
-                if str(user_tweeter_id) in user_tweet_text:
-                    read_tweet = RawTweet.get_tweet(user_tweeter_id)
-                    if read_tweet is not None:
-                        db.session.query(MainTweet).filter(MainTweet.tweeter_id == user_tweeter_id).update(
-                            {MainTweet.tweet: read_tweet}, synchronize_session=False)
-                        db.session.commit()
-                        user_tweet_text = read_tweet
+                # if str(user_tweeter_id) in user_tweet_text:
+                #     read_tweet = RawTweet.get_tweet(user_tweeter_id)
+                #     if read_tweet is not None:
+                #         db.session.query(MainTweet).filter(MainTweet.tweeter_id == user_tweeter_id).update(
+                #             {MainTweet.tweet: read_tweet}, synchronize_session=False)
+                #         db.session.commit()
+                #         user_tweet_text = read_tweet
                 break
         form.id.data = user_tweeter_id
         form.tweet_content.data = user_tweet_text
