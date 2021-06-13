@@ -5,6 +5,7 @@ import codecs
 import tweepy
 import os
 import time
+import re
 
 config_path = os.path.dirname(__file__)
 tweeter_keys = json.load(open(os.path.join(config_path, 'config/keys.json'), 'rb'))
@@ -12,7 +13,6 @@ tweeter_keys = json.load(open(os.path.join(config_path, 'config/keys.json'), 'rb
 auth = tweepy.OAuthHandler(tweeter_keys['API key'], tweeter_keys['API secret key'])
 auth.set_access_token(tweeter_keys['Access token'], tweeter_keys['Access token secret'])
 api = tweepy.API(auth)
-
 
 
 class RawTweet:
@@ -149,3 +149,25 @@ class DBTweet:
                         MainTweet.query.filter_by(tweeter_id=t_id).delete()
                         print(t_id)
                         db.session.commit()
+
+
+def fix_JSON(jsonStr):
+    # First remove the " from where it is supposed to be.
+    jsonStr = re.sub(r'\\', '', jsonStr)
+    jsonStr = re.sub(r'{"', '{`', jsonStr)
+    jsonStr = re.sub(r'"}', '`}', jsonStr)
+    jsonStr = re.sub(r'":"', '`:`', jsonStr)
+    jsonStr = re.sub(r'":', '`:', jsonStr)
+    jsonStr = re.sub(r'","', '`,`', jsonStr)
+    jsonStr = re.sub(r'",', '`,', jsonStr)
+    jsonStr = re.sub(r',"', ',`', jsonStr)
+    jsonStr = re.sub(r'\["', '\[`', jsonStr)
+    jsonStr = re.sub(r'"\]', '`\]', jsonStr)
+
+    # Remove all the unwanted " and replace with ' '
+    jsonStr = re.sub(r'"', ' ', jsonStr)
+
+    # Put back all the " where it supposed to be.
+    jsonStr = re.sub(r'\`', '\"', jsonStr)
+
+    return jsonStr

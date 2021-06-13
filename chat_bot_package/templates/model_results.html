@@ -1,0 +1,64 @@
+{% extends "layout.html"%}
+
+{%block content%}
+    <div class="content-section">
+        <form method="POST" action="">
+            <div class="form-group text-right">
+                 <div class="col-sm dropdown">
+                     <button class="btn btn-light dropdown-toggle text-right" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="True">
+                        انتخاب مدل
+                      </button>
+                     <div class="dropdown-menu text-right" aria-labelledby="dropdownMenuButton">
+
+                        <label class="dropdown-item">seq2seq simple with gru_cell </label>
+                         <label class="dropdown-item">seq2seq simple with gru_cell </label>
+                         <label class="dropdown-item">seq2seq simple with gru_cell </label>
+                     </div>
+
+                </div>
+            </div>
+
+            <div class="form-group text-right">
+                <label>مکالمه </label>
+
+                <textarea class="form-control" id="main_dialogue" rows="3">
+                    {{dialogues[0]}}
+                </textarea>
+            </div>
+            <div class="form-group">
+                <label>پاسخ واقعی </label>
+
+                <textarea class="form-control" id="real_response" rows="3">
+                    {{responses[0]}}
+                </textarea>
+            </div>
+            <div class="form-group text-right">
+                <label>پاسخ تولید شده توسط سیستم </label>
+
+                <textarea class="form-control" id="predicted_response" rows="3">
+                    {{predictions[0]}}
+                </textarea>
+            </div>
+            <div class="form-group">
+                <input class="btn btn-outline-info" id="next_button" name="next" value="بعدی">
+            </div>
+        </form>
+    </div>
+    <script>
+        var counter = 0
+        var predictions = JSON.parse(`{{ predictions |tojson |safe }}`);
+        var responses = JSON.parse(`{{ responses |tojson |safe }}`);
+        var dialogues = JSON.parse(`{{ dialogues |tojson |safe }}`);
+
+
+        document.addEventListener("click", function(e) {
+
+          if (e.target.id == "next_button") {
+              counter = counter +1
+              document.getElementById("predicted_response").innerHTML = predictions[counter];
+              document.getElementById("real_response").innerHTML = responses[counter];
+              document.getElementById("main_dialogue").innerHTML = dialogues[counter];
+          }
+        })
+    </script>
+{% endblock content %}

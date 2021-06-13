@@ -1,11 +1,12 @@
-from flask import render_template, url_for, flash, redirect, request
+from flask import render_template, url_for, flash, redirect, request, jsonify
 import json
 import os
 from chat_bot_package import app, db, pass_crypt
 from chat_bot_package.all_froms import RegistrationForm, LoginForm, TweetForm, ReplyForm
 from chat_bot_package.database_tables import User, MainTweet, ReplyTweet, MainTweetTagger, ReplyTweetTagger
 from flask_login import login_user, current_user, logout_user, login_required
-from chat_bot_package.tweet_utils import RawTweet
+from chat_bot_package.tweet_utils import RawTweet, fix_JSON
+import pickle as pkl
 
 config_path = os.path.dirname(__file__)
 CONFIG = json.load(open(os.path.join(config_path, 'config/chatbot_config.json'), 'rb'))
@@ -71,7 +72,7 @@ def home():
                             {MainTweet.tweet: read_tweet}, synchronize_session=False)
                         db.session.commit()
                         user_tweet_text = read_tweet
-                        break
+                break
         form.id.data = user_tweeter_id
         form.tweet_content.data = user_tweet_text
         reply_tweets = ReplyTweet.query.filter_by(tweet_id=user_tweeter_id).all()
@@ -155,3 +156,21 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
+
+@app.route("/model_results")
+def model_results():
+    print(os.getcwd())
+    predictions = pkl.load(open('chat_bot_package/model_outputs/seq2seq_simple-grucell/predictions.pkl', 'rb'))
+    responses = pkl.load(open('chat_bot_package/model_outputs/seq2seq_simple-grucell/responses.pkl', 'rb'))
+    dialogues = pkl.load(open('chat_bot_package/model_outputs/seq2seq_simple-grucell/dialogus.pkl', 'rb'))
+    predictions = [fix_JSON(r) for r in predictions]
+    responses = [fix_JSON(r) for r in responses]
+    dialogues = [fix_JSON(r) for r in dialogues]
+
+    data = ["Wall-E", "Bender", "Rosie"]
+    return render_template("model_results.html", nav_bar=CONFIG['nav_bar'],
+                           side_bar=CONFIG['sidebar'], tweets=default_tweets,
+                           predictions=predictions,
+                           dialogues=dialogues, responses=responses,
+                           first_index=0, test=data)
