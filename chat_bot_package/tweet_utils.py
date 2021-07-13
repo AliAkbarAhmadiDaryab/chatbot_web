@@ -6,6 +6,7 @@ import tweepy
 import os
 import time
 import re
+import pickle as pkl
 
 config_path = os.path.dirname(__file__)
 tweeter_keys = json.load(open(os.path.join(config_path, 'config/keys.json'), 'rb'))
@@ -171,3 +172,14 @@ def fix_JSON(jsonStr):
     jsonStr = re.sub(r'\`', '\"', jsonStr)
 
     return jsonStr
+
+
+def get_models(model_name):
+    print(model_name)
+    predictions = pkl.load(open(f'chat_bot_package/model_outputs/{model_name}/predictions.pkl', 'rb'))
+    responses = pkl.load(open(f'chat_bot_package/model_outputs/{model_name}/responses.pkl', 'rb'))
+    dialogues = pkl.load(open(f'chat_bot_package/model_outputs/{model_name}/dialogues.pkl', 'rb'))
+    predictions = [fix_JSON(r) for r in predictions]
+    responses = [fix_JSON(r) for r in responses]
+    dialogues = [fix_JSON(r) for r in dialogues]
+    return predictions, responses, dialogues

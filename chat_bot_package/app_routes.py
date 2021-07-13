@@ -5,7 +5,7 @@ from chat_bot_package import app, db, pass_crypt
 from chat_bot_package.all_froms import RegistrationForm, LoginForm, TweetForm, ReplyForm
 from chat_bot_package.database_tables import User, MainTweet, ReplyTweet, MainTweetTagger, ReplyTweetTagger
 from flask_login import login_user, current_user, logout_user, login_required
-from chat_bot_package.tweet_utils import RawTweet, fix_JSON
+from chat_bot_package.tweet_utils import get_models
 import pickle as pkl
 
 config_path = os.path.dirname(__file__)
@@ -158,19 +158,74 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route("/model_results")
+@app.route("/seq2seq_loung_attention_grucell", methods=['GET'])
 def model_results():
-    print(os.getcwd())
-    predictions = pkl.load(open('chat_bot_package/model_outputs/seq2seq_simple-grucell/predictions.pkl', 'rb'))
-    responses = pkl.load(open('chat_bot_package/model_outputs/seq2seq_simple-grucell/responses.pkl', 'rb'))
-    dialogues = pkl.load(open('chat_bot_package/model_outputs/seq2seq_simple-grucell/dialogus.pkl', 'rb'))
-    predictions = [fix_JSON(r) for r in predictions]
-    responses = [fix_JSON(r) for r in responses]
-    dialogues = [fix_JSON(r) for r in dialogues]
 
-    data = ["Wall-E", "Bender", "Rosie"]
-    return render_template("model_results.html", nav_bar=CONFIG['nav_bar'],
+    if request.args.get('model_name') is None:
+        model_name = 'seq2seq_loung_attention_grucell'
+        print("Inside system")
+        predictions, responses, dialogues = get_models(model_name)
+
+        return render_template("model_results.html", nav_bar=CONFIG['nav_bar'],
+                               side_bar=CONFIG['sidebar'], tweets=default_tweets,
+                               predictions=predictions,
+                               dialogues=dialogues, responses=responses)
+    else:
+        model_name = request.args.get('model_name')
+        return redirect(url_for('update_model', message=model_name))
+
+
+@app.route("/seq2seq_grucell", methods=['GET'])
+def seq2seq_grucell():
+    model_name = 'seq2seq_grucell'
+    print("Inside system")
+    predictions, responses, dialogues = get_models(model_name)
+
+    return render_template(f"{model_name}.html", nav_bar=CONFIG['nav_bar'],
                            side_bar=CONFIG['sidebar'], tweets=default_tweets,
                            predictions=predictions,
-                           dialogues=dialogues, responses=responses,
-                           first_index=0, test=data)
+                           dialogues=dialogues, responses=responses)
+
+
+@app.route("/seq2seq_simple-lstmcell", methods=['GET'])
+def seq2seq_lstmcell():
+    model_name = 'seq2seq_simple-lstmcell'
+    predictions, responses, dialogues = get_models(model_name)
+
+    return render_template(f"{model_name}.html", nav_bar=CONFIG['nav_bar'],
+                           side_bar=CONFIG['sidebar'], tweets=default_tweets,
+                           predictions=predictions,
+                           dialogues=dialogues, responses=responses)
+
+
+@app.route("/seq2seq_loung_attention_grucell", methods=['GET'])
+def seq2seq_loung_attention_grucell():
+    model_name = 'seq2seq_loung_attention_grucell'
+    predictions, responses, dialogues = get_models(model_name)
+
+    return render_template(f"{model_name}.html", nav_bar=CONFIG['nav_bar'],
+                           side_bar=CONFIG['sidebar'], tweets=default_tweets,
+                           predictions=predictions,
+                           dialogues=dialogues, responses=responses)
+
+
+@app.route("/seq2seq_loung_attention_lstmcell", methods=['GET'])
+def seq2seq_loung_attention_lstmcell():
+    model_name = 'seq2seq_loung_attention_lstmcell'
+    predictions, responses, dialogues = get_models(model_name)
+
+    return render_template(f"{model_name}.html", nav_bar=CONFIG['nav_bar'],
+                           side_bar=CONFIG['sidebar'], tweets=default_tweets,
+                           predictions=predictions,
+                           dialogues=dialogues, responses=responses)
+
+
+@app.route("/bahdanau_attention_seq2seq_lstm", methods=['GET'])
+def bahdanau_attention_seq2seq_lstm():
+    model_name = 'bahdanau_attention_seq2seq_lstm'
+    predictions, responses, dialogues = get_models(model_name)
+
+    return render_template(f"{model_name}.html", nav_bar=CONFIG['nav_bar'],
+                           side_bar=CONFIG['sidebar'], tweets=default_tweets,
+                           predictions=predictions,
+                           dialogues=dialogues, responses=responses)
