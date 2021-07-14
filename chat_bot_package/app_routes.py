@@ -157,13 +157,12 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
-
+@app.route("/model_results", methods=['GET'])
 @app.route("/seq2seq_loung_attention_grucell", methods=['GET'])
 def model_results():
 
     if request.args.get('model_name') is None:
         model_name = 'seq2seq_loung_attention_grucell'
-        print("Inside system")
         predictions, responses, dialogues = get_models(model_name)
 
         return render_template("model_results.html", nav_bar=CONFIG['nav_bar'],
