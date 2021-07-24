@@ -53,6 +53,17 @@ def home():
             flash(f' توییت با شناسه {form.id.data} ذخیره شد ', 'success')
             return redirect(url_for('home'))
         else:
+            main_tweet_tagger = MainTweetTagger(sentiment='next', topic='next',
+                                                user_id=current_user.id, style='next',
+                                                id_main=form.id.data)
+            db.session.add(main_tweet_tagger)
+            db.session.commit()
+            for fr in form.replies:
+                reply_tweet_tagger = ReplyTweetTagger(sentiment='next', topic='next',
+                                                      user_id=current_user.id, style='next',
+                                                      id_reply=fr.tweeter_id.data)
+                db.session.add(reply_tweet_tagger)
+                db.session.commit()
             flash(f' نمایش توییت بعدی ', 'info')
             return redirect(url_for('home'))
     else:
@@ -65,13 +76,6 @@ def home():
             if tweet[1] is None:
                 user_tweeter_id = tweet[0].tweeter_id
                 user_tweet_text = tweet[0].tweet
-                # if str(user_tweeter_id) in user_tweet_text:
-                #     read_tweet = RawTweet.get_tweet(user_tweeter_id)
-                #     if read_tweet is not None:
-                #         db.session.query(MainTweet).filter(MainTweet.tweeter_id == user_tweeter_id).update(
-                #             {MainTweet.tweet: read_tweet}, synchronize_session=False)
-                #         db.session.commit()
-                #         user_tweet_text = read_tweet
                 break
         form.id.data = user_tweeter_id
         form.tweet_content.data = user_tweet_text
