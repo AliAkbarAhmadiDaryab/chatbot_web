@@ -69,3 +69,23 @@ class ReplyTweetTagger(db.Model):
     def __repr__(self):
         return f"Reply Tweet: Id: {self.id},  Main Tweet ID: {self.id_reply}, user: {self.user_id}, " \
                f"sentiment: {self.sentiment}, topic: {self.topic}"
+
+
+class TestDialogueResponse(db.Model):
+    __table_args__ = {'extend_existing': True}
+    id = db.Column(db.Integer, primary_key=True)
+    dialogue = db.Column(db.String(255), nullable=False)
+    response = db.Column(db.String(255), nullable=False)
+
+    def __repr__(self):
+        return f"Id: {self.id}, Dialogue : {self.dialogue}, Response: {self.response}"
+
+
+class TestModelPrediction(db.Model):
+    __table_args__ = {'extend_existing': True}
+    id = db.Column(db.Integer, primary_key=True)
+    dialogue = db.Column(db.String(255), nullable=False)
+    response = db.Column(db.String(255), nullable=False)
+
+    def __repr__(self):
+        return f"Id: {self.id}, Dialogue : {self.dialogue}, Response: {self.response}"
