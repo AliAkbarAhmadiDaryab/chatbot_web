@@ -88,12 +88,14 @@ def home():
                                       (MainTweetTagger.user_id == current_user.id)).all()
         user_tweeter_id = None
         user_tweet_text = None
+        user_tweet_counter = 0
         for tweet in tweets_all:
             if tweet[1] is None:
                 user_tweeter_id = tweet[0].tweeter_id
                 user_tweet_text = tweet[0].tweet
                 break
             last_tweet_id = tweet[0].tweeter_id
+            user_tweet_counter += 1
         form.id.data = user_tweeter_id
         form.tweet_content.data = user_tweet_text
         reply_tweets = ReplyTweet.query.filter_by(tweet_id=user_tweeter_id).all()
@@ -109,7 +111,9 @@ def home():
                                nav_bar=CONFIG['nav_bar'],
                                side_bar=CONFIG['sidebar'], tweet_titles=tweet_titles, sentiments=sentiments,
                                style=styles,
-                               app_buttons=CONFIG['buttons'], form=form, last_tweet_id=last_tweet_id)
+                               app_buttons=CONFIG['buttons'], form=form,
+                               last_tweet_id=last_tweet_id,
+                               user_tweet_counter=user_tweet_counter)
 
 
 @app.route("/next")

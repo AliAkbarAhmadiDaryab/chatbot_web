@@ -48,7 +48,7 @@ class ReplyForm(Form):
     tweeter_id = HiddenField('شناسه')
     reply_content = TextAreaField('ریتوییت')
     topic_list = [(i, t) for i, t in enumerate(configs['topic_choices'])]
-    r_topics = MultiCheckboxField('Topics', choices=topic_list, coerce=int)
+    r_topics = MultiCheckboxField('موضوع توییت', choices=topic_list, coerce=int)
     reply_sentiment = SelectField(' احساس توییت', choices=SENTIMENT_CHOICES)
     id_backup = StringField()
 
