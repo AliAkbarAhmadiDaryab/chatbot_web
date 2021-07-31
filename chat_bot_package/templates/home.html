@@ -8,7 +8,7 @@
 
                 <div class="row">
                     <legend class="border-bottom mb-4 col-sm">
-                        {{form.id.data}} :{{form.id.label}}
+
                         {{ form.id(class="form-control form-control-lg is-invalid") }}
                     </legend>
                     <legend class="border-bottom mb-4 col-sm text-right">
@@ -31,20 +31,19 @@
                 </div>
                 <div class="form-group row">
                     <div class="col-sm dropdown">
-                        {{ form.tweet_topic.label(class="form-control-label ") }}
-                        {{ form.tweet_topic(class="dropdown")}}
-                    </div>
-                    <div class="col-sm dropdown">
                         {{ form.tweet_sentiment.label(class="form-control-label ") }}
                         {{ form.tweet_sentiment(class="dropdown")}}
                     </div>
+                </div>
+<!--                test-->
+                <div class="form-group row">
                     <div class="col-sm dropdown">
-                        {{ form.tweet_style.label(class="form-control-label ") }}
-                        {{ form.tweet_style(class="dropdown")}}
+                        {%for topic in form.topics%}
+                            {{topic.label(class="form-control-label ")}}
+                            {{topic(class="dropdown")}}
+                        {% endfor %}
                     </div>
                 </div>
-
-
                 <div class="form-group row">
                     <legend class="border-bottom mb-4 col-sm text-right">
                         {{form.replies[0].id.label}}
@@ -65,28 +64,27 @@
                     {% else %}
 
                         {{ form.hidden_tag() }}
-                        {{field.tweeter_id.data}}: {{field.tweeter_id.label}}
                         {{field.tweeter_id(class="form-control form-control-lg is-invalid") }}
 
                         {{ field.reply_content.data(class="form-control form-control-sm text-right") }}
                     {% endif %}
 
                     <div class="row form-group">
-                        <div class="col-sm dropdown form-group">
-                            {{ field.reply_topic.label(class="form-control-label ") }}
-                            {{ field.reply_topic(class="dropdown")}}
-                        </div>
-                        <div class="col-sm dropdown form-group">
+                        <div class="col-sm dropdown">
                             {{ field.reply_sentiment.label(class="form-control-label ") }}
                             {{ field.reply_sentiment(class="dropdown")}}
                         </div>
-                        <div class="col-sm dropdown form-group">
-                            {{ field.reply_style.label(class="form-control-label ") }}
-                            {{ field.reply_style(class="dropdown")}}
+                    </div>
+                    <!--                test-->
+                    <div class="form-group row">
+                        <div class="col-sm dropdown">
+                            {%for topic in field.r_topics%}
+                                {{topic.label(class="form-control-label ")}}
+                                {{topic(class="dropdown")}}
+                            {% endfor %}
                         </div>
                     </div>
-
-                {% endfor %}
+                 {% endfor %}
                 </div>
             </fieldset>
             <div class="form-group row">

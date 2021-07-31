@@ -39,17 +39,33 @@ def home():
     form = TweetForm()
     if form.validate_on_submit():
         if form.submit.data:
-            main_tweet_tagger = MainTweetTagger(sentiment=form.tweet_sentiment.data, topic=form.tweet_topic.data,
-                                                user_id=current_user.id, style=form.tweet_style.data,
-                                                id_main=form.id.data)
-            db.session.add(main_tweet_tagger)
+            for t_inx in form.topics.data:
+                main_tweet_tagger = MainTweetTagger(sentiment=form.tweet_sentiment.data,
+                                                    topic=CONFIG['topic_choices'][t_inx],
+                                                    user_id=current_user.id, style='style',
+                                                    id_main=form.id.data)
+                db.session.add(main_tweet_tagger)
+            if len(form.topics.data) == 0:
+                main_tweet_tagger = MainTweetTagger(sentiment=form.tweet_sentiment.data,
+                                                    topic=CONFIG['topic_choices'][0],
+                                                    user_id=current_user.id, style='style',
+                                                    id_main=form.id.data)
+                db.session.add(main_tweet_tagger)
             db.session.commit()
             for fr in form.replies:
-                reply_tweet_tagger = ReplyTweetTagger(sentiment=fr.reply_sentiment.data, topic=fr.reply_topic.data,
-                                                      user_id=current_user.id, style=fr.reply_style.data,
-                                                      id_reply=fr.tweeter_id.data)
-                db.session.add(reply_tweet_tagger)
-                db.session.commit()
+                for rt_inx in fr.r_topics.data:
+                    reply_tweet_tagger = ReplyTweetTagger(sentiment=fr.reply_sentiment.data,
+                                                          topic=CONFIG['topic_choices'][rt_inx],
+                                                          user_id=current_user.id, style="style",
+                                                          id_reply=fr.tweeter_id.data)
+                    db.session.add(reply_tweet_tagger)
+                if len(fr.r_topics.data) == 0:
+                    reply_tweet_tagger = ReplyTweetTagger(sentiment=fr.reply_sentiment.data,
+                                                          topic=CONFIG['topic_choices'][0],
+                                                          user_id=current_user.id, style="style",
+                                                          id_reply=fr.tweeter_id.data)
+                    db.session.add(reply_tweet_tagger)
+            db.session.commit()
             flash(f' توییت با شناسه {form.id.data} ذخیره شد ', 'success')
             return redirect(url_for('home'))
         else:
@@ -77,6 +93,7 @@ def home():
                 user_tweeter_id = tweet[0].tweeter_id
                 user_tweet_text = tweet[0].tweet
                 break
+            last_tweet_id = tweet[0].tweeter_id
         form.id.data = user_tweeter_id
         form.tweet_content.data = user_tweet_text
         reply_tweets = ReplyTweet.query.filter_by(tweet_id=user_tweeter_id).all()
@@ -85,7 +102,6 @@ def home():
             reply.tweeter_id = str(reply_tweet.tweeter_id)
             reply.reply_content.data = reply_tweet.reply_tweet
             reply.reply_sentiment.data = sentiments
-            reply.reply_topic.data = tweet_titles
             reply.id_backup.data = str(reply_tweet.tweeter_id)
             form.replies.append_entry(reply)
 
@@ -93,7 +109,7 @@ def home():
                                nav_bar=CONFIG['nav_bar'],
                                side_bar=CONFIG['sidebar'], tweet_titles=tweet_titles, sentiments=sentiments,
                                style=styles,
-                               app_buttons=CONFIG['buttons'], form=form)
+                               app_buttons=CONFIG['buttons'], form=form, last_tweet_id=last_tweet_id)
 
 
 @app.route("/next")

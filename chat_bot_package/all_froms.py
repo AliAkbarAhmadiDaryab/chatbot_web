@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, SelectField, \
-    HiddenField, FormField, FieldList, Form
+    HiddenField, FormField, FieldList, Form, SelectMultipleField, widgets
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from chat_bot_package.database_tables import User
 import json
@@ -13,6 +13,17 @@ TOPIC_CHOICES = configs['topic_choices']
 SENTIMENT_CHOICES = configs['sentiment_choices']
 STYLE_CHOICES = configs['style_choices']
 BUTTONS = configs['buttons']
+
+
+class MultiCheckboxField(SelectMultipleField):
+    """
+    A multiple-select, except displays a list of checkboxes.
+
+    Iterating the field will produce subfields, allowing custom rendering of
+    the enclosed checkbox fields.
+    """
+    widget = widgets.ListWidget(prefix_label=False)
+    option_widget = widgets.CheckboxInput()
 
 
 class RegistrationForm(FlaskForm):
@@ -36,9 +47,9 @@ class RegistrationForm(FlaskForm):
 class ReplyForm(Form):
     tweeter_id = HiddenField('شناسه')
     reply_content = TextAreaField('ریتوییت')
-    reply_topic = SelectField(' موضوع توییت', choices=TOPIC_CHOICES)
+    topic_list = [(i, t) for i, t in enumerate(configs['topic_choices'])]
+    r_topics = MultiCheckboxField('Topics', choices=topic_list, coerce=int)
     reply_sentiment = SelectField(' احساس توییت', choices=SENTIMENT_CHOICES)
-    reply_style = SelectField(' سلیقه توییت', choices=STYLE_CHOICES)
     id_backup = StringField()
 
 
@@ -52,9 +63,9 @@ class LoginForm(FlaskForm):
 class TweetForm(FlaskForm):
     id = HiddenField('شناسه', validators=[DataRequired()])
     tweet_content = TextAreaField('توییت بعدی', validators=[DataRequired()])
-    tweet_topic = SelectField(' موضوع توییت', choices=TOPIC_CHOICES)
+    topic_list = [(i, t) for i, t in enumerate(configs['topic_choices'])]
+    topics = MultiCheckboxField('Topics', choices=topic_list, coerce=int)
     tweet_sentiment = SelectField(' احساس توییت', choices=SENTIMENT_CHOICES)
-    tweet_style = SelectField('سلیقه توییت', choices=STYLE_CHOICES)
     replies = FieldList(FormField(ReplyForm), min_entries=0)
     submit = SubmitField(BUTTONS['save'])
     next = SubmitField(BUTTONS['reject'])
