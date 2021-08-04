@@ -23,7 +23,7 @@ class User(db.Model, UserMixin):
 class MainTweet(db.Model):
     __table_args__ = {'extend_existing': True}
     tweeter_id = db.Column(db.BigInteger, primary_key=True)
-    tweet = db.Column(db.String(300), nullable=False)
+    tweet = db.Column(db.String(400), nullable=False)
     replies = db.relationship('ReplyTweet', backref='reply', lazy=True)
     tagger_user = db.relationship('MainTweetTagger', backref='tagger_user', lazy=True)
 
@@ -34,7 +34,7 @@ class MainTweet(db.Model):
 class ReplyTweet(db.Model):
     __table_args__ = {'extend_existing': True}
     tweeter_id = db.Column(db.BigInteger, primary_key=True)
-    reply_tweet = db.Column(db.String(300), nullable=False)
+    reply_tweet = db.Column(db.String(400), nullable=False)
     tagger_user = db.relationship('ReplyTweetTagger', backref='tagger_user', lazy=True)
     tweet_id = db.Column(db.BigInteger, db.ForeignKey('main_tweet.tweeter_id'), nullable=False)
 
@@ -74,8 +74,8 @@ class ReplyTweetTagger(db.Model):
 class TestDialogueResponse(db.Model):
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True)
-    dialogue = db.Column(db.String(255), nullable=False)
-    response = db.Column(db.String(255), nullable=False)
+    dialogue = db.Column(db.String(400), nullable=False)
+    response = db.Column(db.String(400), nullable=False)
 
     def __repr__(self):
         return f"Id: {self.id}, Dialogue : {self.dialogue}, Response: {self.response}"
@@ -84,8 +84,9 @@ class TestDialogueResponse(db.Model):
 class TestModelPrediction(db.Model):
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True)
-    dialogue = db.Column(db.String(255), nullable=False)
-    response = db.Column(db.String(255), nullable=False)
+    id_d_r = db.Column(db.Integer,  db.ForeignKey('test_dialogue_response.id'), nullable=False)
+    model_name = db.Column(db.String(100), nullable=False)
+    prediction = db.Column(db.String(400), nullable=False)
 
     def __repr__(self):
         return f"Id: {self.id}, Dialogue : {self.dialogue}, Response: {self.response}"

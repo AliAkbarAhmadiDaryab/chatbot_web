@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, SelectField, \
-    HiddenField, FormField, FieldList, Form, SelectMultipleField, widgets
+    HiddenField, FormField, FieldList, Form, SelectMultipleField, widgets, RadioField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from chat_bot_package.database_tables import User
 import json
@@ -49,7 +49,10 @@ class ReplyForm(Form):
     reply_content = TextAreaField('ریتوییت')
     topic_list = [(i, t) for i, t in enumerate(configs['topic_choices'])]
     r_topics = MultiCheckboxField('موضوع توییت', choices=topic_list, coerce=int)
-    reply_sentiment = SelectField(' احساس توییت', choices=SENTIMENT_CHOICES)
+    sentiments_choices = [(ist, s) for ist, s in enumerate(SENTIMENT_CHOICES)]
+    reply_sentiment = RadioField('احساس توییت',
+                                 choices=sentiments_choices,
+                                 coerce=int)
     id_backup = StringField()
 
 
@@ -64,8 +67,18 @@ class TweetForm(FlaskForm):
     id = HiddenField('شناسه', validators=[DataRequired()])
     tweet_content = TextAreaField('توییت بعدی', validators=[DataRequired()])
     topic_list = [(i, t) for i, t in enumerate(configs['topic_choices'])]
-    topics = MultiCheckboxField('Topics', choices=topic_list, coerce=int)
-    tweet_sentiment = SelectField(' احساس توییت', choices=SENTIMENT_CHOICES)
+    topics = MultiCheckboxField('موضوع توییت', choices=topic_list, coerce=int)
+    sentiments_choices = [(ist, s) for ist, s in enumerate(SENTIMENT_CHOICES)]
+    tweet_sentiment = RadioField('احساس توییت',
+                                 choices=sentiments_choices,
+                                 coerce=int)
     replies = FieldList(FormField(ReplyForm), min_entries=0)
     submit = SubmitField(BUTTONS['save'])
     next = SubmitField(BUTTONS['reject'])
+
+
+class ModelOutputs(FlaskForm):
+    id = HiddenField('آیدی')
+    dialogue = TextAreaField('دیالوگ', validators=[DataRequired()])
+    response = TextAreaField('پاسخ اصلی', validators=[DataRequired()])
+    submit = SubmitField('تایید ارزیابی')

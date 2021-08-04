@@ -29,19 +29,19 @@
                         {{ form.tweet_content(class="form-control form-control-sm text-right") }}
                     {% endif %}
                 </div>
-                <div class="form-group row">
-                    <div class="col-sm dropdown">
-                        {{ form.tweet_sentiment.label(class="form-control-label ") }}
-                        {{ form.tweet_sentiment(class="dropdown")}}
-                    </div>
+                <div class="form-group">
+                     <div class="text-right form-check">
+                        {% for s_radio in form.tweet_sentiment %}
+                             {{ s_radio.label}}
+                             {{ s_radio}}
+                        {% endfor %}
+                     </div>
                 </div>
 <!--                test-->
                 <div class="form-group text-right">
                         {{form.topics.label(class="form-control-label")}}
                 </div>
                 <div class="form-group row">
-
-
                     <div class="col-sm dropdown">
 
                         {%for topic in form.topics%}
@@ -76,12 +76,17 @@
                     {% endif %}
 
                     <div class="row form-group">
-                        <div class="col-sm dropdown">
-                            {{ field.reply_sentiment.label(class="form-control-label ") }}
-                            {{ field.reply_sentiment(class="dropdown")}}
+                        <div class="col-sm text-right form-check">
+                            {% for s_radio in field.reply_sentiment %}
+                                 {{ s_radio.label}}
+                                 {{ s_radio}}
+                            {% endfor %}
                         </div>
                     </div>
                     <!--                test-->
+                    <div class="form-group text-right">
+                        {{form.topics.label(class="form-control-label")}}
+                    </div>
                     <div class="form-group row">
                         <div class="col-sm dropdown">
                             {%for topic in field.r_topics%}

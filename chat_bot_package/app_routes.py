@@ -40,13 +40,13 @@ def home():
     if form.validate_on_submit():
         if form.submit.data:
             for t_inx in form.topics.data:
-                main_tweet_tagger = MainTweetTagger(sentiment=form.tweet_sentiment.data,
+                main_tweet_tagger = MainTweetTagger(sentiment=CONFIG['sentiment_choices'][form.tweet_sentiment.data],
                                                     topic=CONFIG['topic_choices'][t_inx],
                                                     user_id=current_user.id, style='style',
                                                     id_main=form.id.data)
                 db.session.add(main_tweet_tagger)
             if len(form.topics.data) == 0:
-                main_tweet_tagger = MainTweetTagger(sentiment=form.tweet_sentiment.data,
+                main_tweet_tagger = MainTweetTagger(sentiment=CONFIG['sentiment_choices'][0],
                                                     topic=CONFIG['topic_choices'][0],
                                                     user_id=current_user.id, style='style',
                                                     id_main=form.id.data)
@@ -54,13 +54,14 @@ def home():
             db.session.commit()
             for fr in form.replies:
                 for rt_inx in fr.r_topics.data:
-                    reply_tweet_tagger = ReplyTweetTagger(sentiment=fr.reply_sentiment.data,
-                                                          topic=CONFIG['topic_choices'][rt_inx],
-                                                          user_id=current_user.id, style="style",
-                                                          id_reply=fr.tweeter_id.data)
+                    reply_tweet_tagger = ReplyTweetTagger(
+                        sentiment=CONFIG['sentiment_choices'][fr.reply_sentiment.data],
+                        topic=CONFIG['topic_choices'][rt_inx],
+                        user_id=current_user.id, style="style",
+                        id_reply=fr.tweeter_id.data)
                     db.session.add(reply_tweet_tagger)
                 if len(fr.r_topics.data) == 0:
-                    reply_tweet_tagger = ReplyTweetTagger(sentiment=fr.reply_sentiment.data,
+                    reply_tweet_tagger = ReplyTweetTagger(sentiment=CONFIG['sentiment_choices'][0],
                                                           topic=CONFIG['topic_choices'][0],
                                                           user_id=current_user.id, style="style",
                                                           id_reply=fr.tweeter_id.data)
@@ -84,8 +85,10 @@ def home():
             return redirect(url_for('home'))
     else:
         tweets_all = db.session.query(MainTweet, MainTweetTagger).outerjoin(MainTweetTagger,
-                                      (MainTweet.tweeter_id == MainTweetTagger.id_main) &
-                                      (MainTweetTagger.user_id == current_user.id)).all()
+                                                                            (
+                                                                                        MainTweet.tweeter_id == MainTweetTagger.id_main) &
+                                                                            (
+                                                                                        MainTweetTagger.user_id == current_user.id)).all()
         user_tweeter_id = None
         user_tweet_text = None
         user_tweet_counter = 0
@@ -181,10 +184,10 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
+
 @app.route("/model_results", methods=['GET'])
 @app.route("/seq2seq_loung_attention_grucell", methods=['GET'])
 def model_results():
-
     if request.args.get('model_name') is None:
         model_name = 'seq2seq_loung_attention_grucell'
         predictions, responses, dialogues = get_models(model_name)
@@ -198,57 +201,4 @@ def model_results():
         return redirect(url_for('update_model', message=model_name))
 
 
-@app.route("/seq2seq_grucell", methods=['GET'])
-def seq2seq_grucell():
-    model_name = 'seq2seq_grucell'
-    print("Inside system")
-    predictions, responses, dialogues = get_models(model_name)
 
-    return render_template(f"{model_name}.html", nav_bar=CONFIG['nav_bar'],
-                           side_bar=CONFIG['sidebar'], tweets=default_tweets,
-                           predictions=predictions,
-                           dialogues=dialogues, responses=responses)
-
-
-@app.route("/seq2seq_simple-lstmcell", methods=['GET'])
-def seq2seq_lstmcell():
-    model_name = 'seq2seq_simple-lstmcell'
-    predictions, responses, dialogues = get_models(model_name)
-
-    return render_template(f"{model_name}.html", nav_bar=CONFIG['nav_bar'],
-                           side_bar=CONFIG['sidebar'], tweets=default_tweets,
-                           predictions=predictions,
-                           dialogues=dialogues, responses=responses)
-
-
-@app.route("/seq2seq_loung_attention_grucell", methods=['GET'])
-def seq2seq_loung_attention_grucell():
-    model_name = 'seq2seq_loung_attention_grucell'
-    predictions, responses, dialogues = get_models(model_name)
-
-    return render_template(f"{model_name}.html", nav_bar=CONFIG['nav_bar'],
-                           side_bar=CONFIG['sidebar'], tweets=default_tweets,
-                           predictions=predictions,
-                           dialogues=dialogues, responses=responses)
-
-
-@app.route("/seq2seq_loung_attention_lstmcell", methods=['GET'])
-def seq2seq_loung_attention_lstmcell():
-    model_name = 'seq2seq_loung_attention_lstmcell'
-    predictions, responses, dialogues = get_models(model_name)
-
-    return render_template(f"{model_name}.html", nav_bar=CONFIG['nav_bar'],
-                           side_bar=CONFIG['sidebar'], tweets=default_tweets,
-                           predictions=predictions,
-                           dialogues=dialogues, responses=responses)
-
-
-@app.route("/bahdanau_attention_seq2seq_lstm", methods=['GET'])
-def bahdanau_attention_seq2seq_lstm():
-    model_name = 'bahdanau_attention_seq2seq_lstm'
-    predictions, responses, dialogues = get_models(model_name)
-
-    return render_template(f"{model_name}.html", nav_bar=CONFIG['nav_bar'],
-                           side_bar=CONFIG['sidebar'], tweets=default_tweets,
-                           predictions=predictions,
-                           dialogues=dialogues, responses=responses)
